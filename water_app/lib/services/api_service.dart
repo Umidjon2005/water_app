@@ -21,7 +21,8 @@ class ApiService {
   }
 
   static Future<List<RegionalStat>> fetchSurxondaryoStats() async {
-    final response = await http.get(Uri.parse('$baseUrl/stats/surxondaryo'));
+    final response = await http.get(Uri.parse('${ApiConfig.baseUrl}/districts')
+);
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
