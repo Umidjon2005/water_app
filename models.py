@@ -1,13 +1,9 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String
 from database import Base
 
-class WaterData(Base):
-    __tablename__ = "water_data"
+class Water(Base):
+    __tablename__ = "waters"
 
     id = Column(Integer, primary_key=True, index=True)
-    district = Column(String, index=True)
-    location_name = Column(String)
-    latitude = Column(Float)
-    longitude = Column(Float)
+    name = Column(String)
     status = Column(String)
-    water_level = Column(Float, nullable=True)
