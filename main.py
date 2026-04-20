@@ -1,18 +1,11 @@
-from fastapi import FastAPI, Depends
-from sqlalchemy.orm import Session
-from database import SessionLocal, engine, Base
-import models
+from fastapi import FastAPI
 
 app = FastAPI()
 
-try:
-    Base.metadata.create_all(bind=engine)
-except Exception as e:
-    print("DB ERROR:", e)
+@app.get("/")
+def home():
+    return {"message": "Backend ishlayapti"}
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+@app.get("/health")
+def health():
+    return {"status": "ok"}
