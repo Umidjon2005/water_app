@@ -37,6 +37,18 @@ def create_water(name: str, status: str, db: Session = Depends(get_db)):
         "status": water.status
     }
 
+@app.get("/water/add")
+def add_water(name: str, status: str, db: Session = Depends(get_db)):
+    water = models.Water(name=name, status=status)
+    db.add(water)
+    db.commit()
+    db.refresh(water)
+    return {
+        "id": water.id,
+        "name": water.name,
+        "status": water.status
+    }
+
 @app.get("/water")
 def get_waters(db: Session = Depends(get_db)):
     waters = db.query(models.Water).all()
