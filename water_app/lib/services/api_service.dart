@@ -1,46 +1,30 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
-import '../models/district.dart';
-import '../models/regional_stat.dart';
-import '../models/stats_summary.dart';
 import 'api_config.dart';
 
 class ApiService {
-  static String get baseUrl => ApiConfig.baseUrl;
 
-  static Future<List<District>> fetchDistricts() async {
-    final response = await http.get(Uri.parse('$baseUrl/districts'));
+  // GET waters
+  static Future<List<dynamic>> getWaters() async {
+    final response = await http.get(
+      Uri.parse("${ApiConfig.baseUrl}/water"),
+    );
 
     if (response.statusCode == 200) {
-      final List data = jsonDecode(response.body);
-      return data.map((e) => District.fromJson(e)).toList();
+      return jsonDecode(response.body);
     } else {
-      throw Exception('Server xatosi: ${response.statusCode}');
+      throw Exception("Xatolik");
     }
   }
 
-  static Future<List<RegionalStat>> fetchSurxondaryoStats() async {
-    final response = await http.get(Uri.parse('${ApiConfig.baseUrl}/districts')
-);
+  // ADD water
+  static Future<void> addWater(String name, String status) async {
+    final response = await http.get(
+      Uri.parse("${ApiConfig.baseUrl}/water/add?name=$name&status=$status"),
+    );
 
-    if (response.statusCode == 200) {
-      final List data = jsonDecode(response.body);
-      return data.map((e) => RegionalStat.fromJson(e)).toList();
-    } else {
-      throw Exception('Statistika xatosi: ${response.statusCode}');
-    }
-  }
-
-  static Future<StatsSummary> fetchSurxondaryoSummary() async {
-    final response =
-        await http.get(Uri.parse('$baseUrl/stats/surxondaryo/summary'));
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return StatsSummary.fromJson(data);
-    } else {
-      throw Exception('Summary xatosi: ${response.statusCode}');
+    if (response.statusCode != 200) {
+      throw Exception("Qo‘shishda xato");
     }
   }
 }
