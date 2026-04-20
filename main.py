@@ -50,30 +50,6 @@ def get_locations(db: Session = Depends(get_db)):
         return {"error": str(e)}
 
 
-@app.get("/locations/{location_id}")
-def get_location(location_id: int, db: Session = Depends(get_db)):
-    try:
-        item = db.query(models.WaterLocation).filter(
-            models.WaterLocation.id == location_id
-        ).first()
-
-        if not item:
-            return {"error": "Topilmadi"}
-
-        return {
-            "id": item.id,
-            "district": item.district,
-            "location_name": item.location_name,
-            "latitude": item.latitude,
-            "longitude": item.longitude,
-            "status": item.status,
-            "water_level": item.water_level,
-            "description": item.description,
-        }
-    except Exception as e:
-        return {"error": str(e)}
-
-
 @app.get("/locations/add")
 def add_location(
     district: str,
@@ -109,6 +85,96 @@ def add_location(
             "water_level": item.water_level,
             "description": item.description,
         }
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e)}
+
+
+@app.get("/locations/{location_id}")
+def get_location(location_id: int, db: Session = Depends(get_db)):
+    try:
+        item = db.query(models.WaterLocation).filter(
+            models.WaterLocation.id == location_id
+        ).first()
+
+        if not item:
+            return {"error": "Topilmadi"}
+
+        return {
+            "id": item.id,
+            "district": item.district,
+            "location_name": item.location_name,
+            "latitude": item.latitude,
+            "longitude": item.longitude,
+            "status": item.status,
+            "water_level": item.water_level,
+            "description": item.description,
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@app.put("/locations/{location_id}")
+def update_location(
+    location_id: int,
+    district: str,
+    location_name: str,
+    latitude: float,
+    longitude: float,
+    status: str,
+    water_level: float = 0,
+    description: str = "",
+    db: Session = Depends(get_db),
+):
+    try:
+        item = db.query(models.WaterLocation).filter(
+            models.WaterLocation.id == location_id
+        ).first()
+
+        if not item:
+            return {"error": "Topilmadi"}
+
+        item.district = district
+        item.location_name = location_name
+        item.latitude = latitude
+        item.longitude = longitude
+        item.status = status
+        item.water_level = water_level
+        item.description = description
+
+        db.commit()
+        db.refresh(item)
+
+        return {
+            "message": "Yangilandi",
+            "id": item.id,
+            "district": item.district,
+            "location_name": item.location_name,
+            "latitude": item.latitude,
+            "longitude": item.longitude,
+            "status": item.status,
+            "water_level": item.water_level,
+            "description": item.description,
+        }
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e)}
+
+
+@app.delete("/locations/{location_id}")
+def delete_location(location_id: int, db: Session = Depends(get_db)):
+    try:
+        item = db.query(models.WaterLocation).filter(
+            models.WaterLocation.id == location_id
+        ).first()
+
+        if not item:
+            return {"error": "Topilmadi"}
+
+        db.delete(item)
+        db.commit()
+
+        return {"message": "O‘chirildi"}
     except Exception as e:
         db.rollback()
         return {"error": str(e)}
