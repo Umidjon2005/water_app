@@ -10,6 +10,7 @@ try:
 except Exception as e:
     print("DB ERROR:", e)
 
+
 def get_db():
     db = SessionLocal()
     try:
@@ -17,13 +18,16 @@ def get_db():
     finally:
         db.close()
 
+
 @app.get("/")
 def home():
     return {"message": "Backend ishlayapti"}
 
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
 
 @app.post("/water")
 def create_water(name: str, status: str, db: Session = Depends(get_db)):
@@ -37,6 +41,7 @@ def create_water(name: str, status: str, db: Session = Depends(get_db)):
         "status": water.status
     }
 
+
 @app.get("/water/add")
 def add_water(name: str, status: str, db: Session = Depends(get_db)):
     water = models.Water(name=name, status=status)
@@ -49,6 +54,7 @@ def add_water(name: str, status: str, db: Session = Depends(get_db)):
         "status": water.status
     }
 
+
 @app.get("/water")
 def get_waters(db: Session = Depends(get_db)):
     waters = db.query(models.Water).all()
@@ -60,3 +66,32 @@ def get_waters(db: Session = Depends(get_db)):
         }
         for w in waters
     ]
+
+
+@app.put("/water/{id}")
+def update_water(id: int, name: str, status: str, db: Session = Depends(get_db)):
+    water = db.query(models.Water).filter(models.Water.id == id).first()
+    if not water:
+        return {"error": "Topilmadi"}
+
+    water.name = name
+    water.status = status
+    db.commit()
+    db.refresh(water)
+    return {
+        "message": "Yangilandi",
+        "id": water.id,
+        "name": water.name,
+        "status": water.status
+    }
+
+
+@app.delete("/water/{id}")
+def delete_water(id: int, db: Session = Depends(get_db)):
+    water = db.query(models.Water).filter(models.Water.id == id).first()
+    if not water:
+        return {"error": "Topilmadi"}
+
+    db.delete(water)
+    db.commit()
+    return {"message": "O‘chirildi"}
