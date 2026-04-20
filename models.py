@@ -5,5 +5,5 @@ class Water(Base):
     __tablename__ = "waters"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    status = Column(String)
+    name = Column(String, nullable=False)
+    status = Column(String, nullable=False)
